@@ -135,17 +135,14 @@
   flex-shrink: 0;
 }
 
-.signature-placeholder {
+.signature-image {
   width: 150px;
-  height: 60px;
-  border: 1px dashed #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: auto;
   margin-bottom: 10px;
   margin-left: auto;
-  color: #666;
-  font-style: italic;
+  display: block;
+  max-height: 60px;
+  object-fit: contain;
 }
 
 .signature-line {
@@ -201,7 +198,7 @@
     text-align: center;
   }
   
-  .signature-placeholder,
+  .signature-image,
   .signature-line {
     margin: 10px auto;
   }

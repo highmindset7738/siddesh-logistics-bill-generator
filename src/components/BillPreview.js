@@ -160,9 +160,7 @@ const BillPreview = ({ billData, onBack }) => {
               4. PAN NO : - MZ5PG4863G
             </div>
             <div className="signature-section">
-              <div className="signature-placeholder">
-                [Signature]
-              </div>
+              <img src="/signature.png" alt="Signature" className="signature-image" />
               <strong>SIDDESH LOGISTICS</strong>
               <div className="signature-line"></div>
             </div>
