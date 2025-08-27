@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import './BillPreview.css';
+import signatureImage from '../signature.png';
 
 const BillPreview = ({ billData, onBack }) => {
   const billRef = useRef();
@@ -161,12 +162,11 @@ const BillPreview = ({ billData, onBack }) => {
             </div>
             <div className="signature-section">
               <img 
-                src="/signature.png" 
+                src={signatureImage} 
                 alt="Signature" 
                 className="signature-image"
                 onError={(e) => {
-                  e.target.style.display = 'none';
-                  console.log('Signature image failed to load');
+                  console.log('Signature image failed to load:', e);
                 }}
                 onLoad={() => console.log('Signature image loaded successfully')}
               />

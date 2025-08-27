@@ -21,10 +21,11 @@
 .bill-container {
   max-width: 800px;
   background: white;
-  border: 3px solid #000000;
+  border: 1px solid #000000;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   font-family: 'Times New Roman', serif;
+  color: #000000;
 }
 
 .company-name {
@@ -72,9 +73,10 @@
 
 .shipment-table th,
 .shipment-table td {
-  border: 2px solid #000000;
+  border: 1px solid #000000;
   padding: 6px;
   text-align: center;
+  color: #000000;
 }
 
 .shipment-table th {
@@ -94,7 +96,7 @@
 }
 
 .payment-summary {
-  border: 2px solid #000000;
+  border: 1px solid #000000;
 }
 
 .payment-summary table {
@@ -105,6 +107,7 @@
   border-bottom: 1px solid #000000;
   padding: 8px 12px;
   min-width: 80px;
+  color: #000000;
 }
 
 .payment-summary td:last-child {
@@ -146,10 +149,46 @@
 }
 
 .signature-line {
-  border-bottom: 2px solid #000000;
+  border-bottom: 1px solid #000000;
   width: 150px;
   margin-top: 10px;
   margin-left: auto;
+}
+
+.bill-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: #000000;
+}
+
+.bottom-section {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+.rupees-section {
+  font-size: 12px;
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+.terms-left {
+  flex: 1;
+  font-size: 11px;
+  padding-right: 20px;
+  color: #000000;
+}
+
+.signature-section {
+  text-align: right;
+  font-size: 12px;
+  flex-shrink: 0;
+  color: #000000;
 }
 
 .divider {
