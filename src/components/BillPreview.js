@@ -160,7 +160,16 @@ const BillPreview = ({ billData, onBack }) => {
               4. PAN NO : - MZ5PG4863G
             </div>
             <div className="signature-section">
-              <img src="/signature.png" alt="Signature" className="signature-image" />
+              <img 
+                src="/signature.png" 
+                alt="Signature" 
+                className="signature-image"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  console.log('Signature image failed to load');
+                }}
+                onLoad={() => console.log('Signature image loaded successfully')}
+              />
               <strong>SIDDESH LOGISTICS</strong>
               <div className="signature-line"></div>
             </div>

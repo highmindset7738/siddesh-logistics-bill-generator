@@ -21,7 +21,7 @@
 .bill-container {
   max-width: 800px;
   background: white;
-  border: 2px solid #333;
+  border: 3px solid #000000;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   font-family: 'Times New Roman', serif;
@@ -72,7 +72,7 @@
 
 .shipment-table th,
 .shipment-table td {
-  border: 1px solid #333;
+  border: 2px solid #000000;
   padding: 6px;
   text-align: center;
 }
@@ -94,7 +94,7 @@
 }
 
 .payment-summary {
-  border: 1px solid #333;
+  border: 2px solid #000000;
 }
 
 .payment-summary table {
@@ -102,7 +102,7 @@
 }
 
 .payment-summary td {
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #000000;
   padding: 8px 12px;
   min-width: 80px;
 }
@@ -146,7 +146,7 @@
 }
 
 .signature-line {
-  border-bottom: 1px solid #333;
+  border-bottom: 2px solid #000000;
   width: 150px;
   margin-top: 10px;
   margin-left: auto;
