@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const BillForm = ({ onSubmit, initialData }) => {
   const [formData, setFormData] = useState(initialData);
 
-  useEffect(() => {
-    calculateTotals();
-  }, [formData.shipments, formData.advanceAmount]);
-
-  const calculateTotals = () => {
+  const calculateTotals = useCallback(() => {
     const totalAmount = formData.shipments.reduce((sum, shipment) => {
       return sum + (parseFloat(shipment.total) || 0);
     }, 0);
@@ -19,7 +15,11 @@ const BillForm = ({ onSubmit, initialData }) => {
       totalAmount,
       balanceAmount
     }));
-  };
+  }, [formData.shipments, formData.advanceAmount]);
+
+  useEffect(() => {
+    calculateTotals();
+  }, [calculateTotals]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
