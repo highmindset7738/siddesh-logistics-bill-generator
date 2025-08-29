@@ -28,6 +28,33 @@ const BillForm = ({ onSubmit, initialData }) => {
     }));
   };
 
+  const fillDummyData = () => {
+    const dummyData = {
+      billNo: 'SL-' + Math.floor(Math.random() * 1000),
+      date: new Date().toISOString().split('T')[0],
+      customerName: 'ABC Industries Pvt Ltd',
+      customerAddress: '123 Industrial Area, Sector 15, Gurgaon, Haryana - 122001',
+      shipments: [
+        {
+          srNo: 1,
+          date: new Date().toISOString().split('T')[0],
+          containerNo: 'TCLU' + Math.floor(Math.random() * 1000000),
+          vehicleNo: 'HR-26-' + Math.floor(Math.random() * 10000),
+          from: 'Mumbai Port',
+          to: 'Delhi ICD',
+          weight: '25.5',
+          totalFair: '15000',
+          total: '15000'
+        }
+      ],
+      advanceAmount: 5000,
+      totalAmount: 15000,
+      balanceAmount: 10000
+    };
+    
+    setFormData(dummyData);
+  };
+
   const handleShipmentChange = (index, field, value) => {
     const updatedShipments = [...formData.shipments];
     updatedShipments[index] = {
@@ -91,7 +118,25 @@ const BillForm = ({ onSubmit, initialData }) => {
       <form onSubmit={handleSubmit} className="form-container">
         {/* Bill Information */}
         <div className="form-section">
-          <h3>📋 Bill Information</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3>📋 Bill Information</h3>
+            <button 
+              type="button" 
+              onClick={fillDummyData}
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: '#10b981',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: '600'
+              }}
+            >
+              🚀 Fill Test Data
+            </button>
+          </div>
           <div className="form-row">
             <div className="form-group">
               <label>Bill Number *</label>
