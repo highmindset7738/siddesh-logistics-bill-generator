@@ -1,4 +1,4 @@
-import { databases, DATABASE_ID, BILLS_COLLECTION_ID, ID } from './config';
+import { databases, storage, DATABASE_ID, BILLS_COLLECTION_ID, STORAGE_BUCKET_ID, ID } from './config';
 
 class BillService {
     async createBill(billData) {
@@ -33,6 +33,56 @@ class BillService {
         } catch (error) {
             console.error('❌ APPWRITE ERROR:', error);
             console.error('Error response:', error.response);
+            throw error;
+        }
+    }
+
+    async savePDFToStorage(pdfBlob, billNumber) {
+        try {
+            console.log('📁 Uploading PDF to storage...');
+            
+            const fileName = `${billNumber.replace(/\//g, '-')}.pdf`;
+            const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+            
+            const uploadedFile = await storage.createFile(
+                STORAGE_BUCKET_ID,
+                ID.unique(),
+                file
+            );
+            
+            console.log('✅ PDF uploaded successfully:', uploadedFile);
+            
+            // Get file URL
+            const fileUrl = storage.getFileView(STORAGE_BUCKET_ID, uploadedFile.$id);
+            
+            return {
+                fileId: uploadedFile.$id,
+                fileUrl: fileUrl.href
+            };
+        } catch (error) {
+            console.error('❌ Error uploading PDF:', error);
+            throw error;
+        }
+    }
+
+    async updateBillWithPDF(billId, pdfFileId, pdfUrl) {
+        try {
+            console.log('🔄 Updating bill with PDF info...');
+            
+            const updatedDocument = await databases.updateDocument(
+                DATABASE_ID,
+                BILLS_COLLECTION_ID,
+                billId,
+                {
+                    pdfFileId: pdfFileId,
+                    pdfUrl: pdfUrl
+                }
+            );
+            
+            console.log('✅ Bill updated with PDF info:', updatedDocument);
+            return updatedDocument;
+        } catch (error) {
+            console.error('❌ Error updating bill with PDF:', error);
             throw error;
         }
     }

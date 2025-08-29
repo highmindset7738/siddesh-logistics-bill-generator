@@ -3,40 +3,69 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import './BillPreview.css';
 import signatureImage from '../signature.png';
+import billService from '../appwrite/billService';
 
-const BillPreview = ({ billData, onBack }) => {
+const BillPreview = ({ billData, onBack, savedBillId }) => {
   const billRef = useRef();
 
   const generatePDF = async () => {
-    const element = billRef.current;
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff'
-    });
+    try {
+      console.log('🔄 Generating PDF...');
+      
+      const element = billRef.current;
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff'
+      });
 
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    
-    const imgWidth = 210;
-    const pageHeight = 295;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight;
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
 
-    let position = 0;
+      let position = 0;
 
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    while (heightLeft >= 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
-    }
 
-    pdf.save(`SIDDESH_LOGISTICS_BILL_${billData.billNo.replace('/', '_')}.pdf`);
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      // Convert PDF to blob for storage
+      const pdfBlob = pdf.output('blob');
+      
+      // Save PDF to Appwrite storage if we have a saved bill ID
+      if (savedBillId) {
+        try {
+          console.log('💾 Saving PDF to Appwrite storage...');
+          const { fileId, fileUrl } = await billService.savePDFToStorage(pdfBlob, billData.billNo);
+          
+          // Update the bill document with PDF info
+          await billService.updateBillWithPDF(savedBillId, fileId, fileUrl);
+          
+          console.log('✅ PDF saved to storage and bill updated!');
+        } catch (storageError) {
+          console.error('❌ Error saving PDF to storage:', storageError);
+          // Continue with download even if storage fails
+        }
+      }
+
+      // Download the PDF
+      pdf.save(`SIDDESH_LOGISTICS_BILL_${billData.billNo.replace(/\//g, '_')}.pdf`);
+      
+    } catch (error) {
+      console.error('❌ Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    }
   };
 
   const formatDate = (dateString) => {

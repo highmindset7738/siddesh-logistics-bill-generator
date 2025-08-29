@@ -8,6 +8,9 @@ import './App.css';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('form');
+  const [showPreview, setShowPreview] = useState(false);
+  const [savedBillId, setSavedBillId] = useState(null);
+  
   const [billData, setBillData] = useState({
     billNo: '',
     date: new Date().toISOString().split('T')[0],
@@ -31,17 +34,17 @@ function App() {
     balanceAmount: 0
   });
 
-  const [showPreview, setShowPreview] = useState(false);
-
   const handleFormSubmit = async (formData) => {
     setBillData(formData);
     
     // Save to Appwrite
     try {
-      await billService.createBill(formData);
-      console.log('Bill saved to Appwrite successfully');
+      const savedBill = await billService.createBill(formData);
+      setSavedBillId(savedBill.$id); // Store the bill ID for PDF saving
+      console.log('Bill saved to Appwrite successfully:', savedBill);
     } catch (error) {
       console.error('Failed to save bill to Appwrite:', error);
+      setSavedBillId(null);
       // Continue to show preview even if save fails
     }
     
@@ -96,7 +99,7 @@ function App() {
           {!showPreview ? (
             <BillForm onSubmit={handleFormSubmit} initialData={billData} />
           ) : (
-            <BillPreview billData={billData} onBack={handleBackToForm} />
+            <BillPreview billData={billData} onBack={handleBackToForm} savedBillId={savedBillId} />
           )}
         </>
       )}
