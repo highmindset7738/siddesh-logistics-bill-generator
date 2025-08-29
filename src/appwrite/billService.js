@@ -79,13 +79,14 @@ class BillService {
             console.log('🚢 Fetching shipments for bill:', billId);
             const response = await databases.listDocuments(
                 DATABASE_ID,
-                SHIPMENTS_COLLECTION_ID,
-                [
-                    `billId="${billId}"`
-                ]
+                SHIPMENTS_COLLECTION_ID
             );
-            console.log('✅ Shipments fetched:', response.documents);
-            return response.documents;
+            
+            // Filter shipments for this bill ID
+            const billShipments = response.documents.filter(shipment => shipment.billId === billId);
+            
+            console.log('✅ Shipments fetched:', billShipments);
+            return billShipments;
         } catch (error) {
             console.error('❌ Error fetching shipments:', error);
             return [];
