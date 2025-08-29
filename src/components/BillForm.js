@@ -3,6 +3,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 const BillForm = ({ onSubmit, initialData }) => {
   const [formData, setFormData] = useState(initialData);
 
+  // Generate unique bill number
+  const generateBillNumber = () => {
+    const now = new Date();
+    const year = now.getFullYear().toString().slice(-2);
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const time = now.getTime().toString().slice(-4);
+    return `SL/${day}${month}${year}/${time}`;
+  };
+
   const calculateTotals = useCallback(() => {
     const totalAmount = formData.shipments.reduce((sum, shipment) => {
       return sum + (parseFloat(shipment.total) || 0);
@@ -21,6 +31,16 @@ const BillForm = ({ onSubmit, initialData }) => {
     calculateTotals();
   }, [calculateTotals]);
 
+  // Auto-generate bill number on component mount
+  useEffect(() => {
+    if (!formData.billNo) {
+      setFormData(prev => ({
+        ...prev,
+        billNo: generateBillNumber()
+      }));
+    }
+  }, [formData.billNo]);
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -30,7 +50,7 @@ const BillForm = ({ onSubmit, initialData }) => {
 
   const fillDummyData = () => {
     const dummyData = {
-      billNo: 'SL-' + Math.floor(Math.random() * 1000),
+      billNo: generateBillNumber(), // Use the generateBillNumber function
       date: new Date().toISOString().split('T')[0],
       customerName: 'ABC Industries Pvt Ltd',
       customerAddress: '123 Industrial Area, Sector 15, Gurgaon, Haryana - 122001',
@@ -53,6 +73,13 @@ const BillForm = ({ onSubmit, initialData }) => {
     };
     
     setFormData(dummyData);
+  };
+
+  const generateNewBillNumber = () => {
+    setFormData(prev => ({
+      ...prev,
+      billNo: generateBillNumber()
+    }));
   };
 
   const handleShipmentChange = (index, field, value) => {
