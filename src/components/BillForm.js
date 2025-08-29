@@ -75,13 +75,6 @@ const BillForm = ({ onSubmit, initialData }) => {
     setFormData(dummyData);
   };
 
-  const generateNewBillNumber = () => {
-    setFormData(prev => ({
-      ...prev,
-      billNo: generateBillNumber()
-    }));
-  };
-
   const handleShipmentChange = (index, field, value) => {
     const updatedShipments = [...formData.shipments];
     updatedShipments[index] = {
