@@ -110,7 +110,18 @@ const BillForm = ({ onSubmit, initialData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Generate a fresh bill number for each bill submission
+    const freshBillData = {
+      ...formData,
+      billNo: generateBillNumber()
+    };
+    
+    // Update the form with the new bill number
+    setFormData(freshBillData);
+    
+    // Submit with the fresh bill number
+    onSubmit(freshBillData);
   };
 
   return (
