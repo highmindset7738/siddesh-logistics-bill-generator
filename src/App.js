@@ -10,6 +10,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState('form');
   const [showPreview, setShowPreview] = useState(false);
   const [savedBillId, setSavedBillId] = useState(null);
+  const [viewingHistoryBill, setViewingHistoryBill] = useState(false);
   
   const [billData, setBillData] = useState({
     billNo: '',
@@ -52,7 +53,16 @@ function App() {
   };
 
   const handleBackToForm = () => {
-    setShowPreview(false);
+    if (viewingHistoryBill) {
+      // If viewing a history bill, go back to history page
+      setViewingHistoryBill(false);
+      setShowPreview(false);
+      setCurrentPage('history');
+      setSavedBillId(null);
+    } else {
+      // Normal back to form
+      setShowPreview(false);
+    }
   };
 
   const handleNavigate = (page) => {
@@ -86,6 +96,8 @@ function App() {
     };
     
     setBillData(formattedBillData);
+    setSavedBillId(bill.$id);
+    setViewingHistoryBill(true);
     setShowPreview(true);
     setCurrentPage('form');
   };

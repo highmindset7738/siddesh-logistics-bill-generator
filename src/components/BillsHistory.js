@@ -1,8 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import React, { useState, useEffect } from 'react';
 import billService from '../appwrite/billService';
-import signatureImage from '../signature.png';
 import './BillsHistory.css';
 
 const BillsHistory = ({ onBack, onViewBill }) => {
@@ -243,13 +240,7 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                   onClick={() => onViewBill(bill)}
                   className="btn btn-secondary"
                 >
-                  👁️ View
-                </button>
-                <button 
-                  onClick={() => generatePDFFromBill(bill)}
-                  className="btn btn-success"
-                >
-                  📥 Download PDF
+                  👁️ View & Download PDF
                 </button>
                 <button 
                   onClick={() => handleDelete(bill.$id)}
