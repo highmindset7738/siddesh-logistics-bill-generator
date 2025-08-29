@@ -1,4 +1,4 @@
-import { databases, storage, DATABASE_ID, BILLS_COLLECTION_ID, STORAGE_BUCKET_ID, ID } from './config';
+import { databases, storage, DATABASE_ID, BILLS_COLLECTION_ID, SHIPMENTS_COLLECTION_ID, STORAGE_BUCKET_ID, ID } from './config';
 
 class BillService {
     async createBill(billData) {
@@ -29,11 +29,67 @@ class BillService {
             );
             
             console.log('✅ SUCCESS! Bill saved to Appwrite:', document);
+            
+            // Save shipments to separate collection
+            if (billData.shipments && billData.shipments.length > 0) {
+                await this.saveShipments(document.$id, billData.shipments);
+            }
+            
             return document;
         } catch (error) {
             console.error('❌ APPWRITE ERROR:', error);
             console.error('Error response:', error.response);
             throw error;
+        }
+    }
+
+    async saveShipments(billId, shipments) {
+        try {
+            console.log('🚢 Saving shipments for bill:', billId);
+            
+            for (const shipment of shipments) {
+                const shipmentData = {
+                    billId: String(billId),
+                    srNo: Number(shipment.srNo || 0),
+                    shipmentDate: String(shipment.date || ''),
+                    containerNo: String(shipment.containerNo || ''),
+                    vehicleNo: String(shipment.vehicleNo || ''),
+                    fromLocation: String(shipment.from || ''),
+                    toLocation: String(shipment.to || ''),
+                    weight: String(shipment.weight || ''),
+                    totalFair: Number(shipment.totalFair || 0),
+                };
+                
+                await databases.createDocument(
+                    DATABASE_ID,
+                    SHIPMENTS_COLLECTION_ID,
+                    ID.unique(),
+                    shipmentData
+                );
+            }
+            
+            console.log('✅ Shipments saved successfully');
+        } catch (error) {
+            console.error('❌ Error saving shipments:', error);
+            throw error;
+        }
+    }
+
+    async getShipments(billId) {
+        try {
+            console.log('🚢 Fetching shipments for bill:', billId);
+            const response = await databases.listDocuments(
+                DATABASE_ID,
+                SHIPMENTS_COLLECTION_ID,
+                [
+                    `billId="${billId}"`
+                ]
+            );
+            console.log('✅ Shipments fetched:', response.documents);
+            return response.documents;
+        } catch (error) {
+            console.error('❌ Error fetching shipments:', error);
+            return [];
         }
     }
 
