@@ -52,7 +52,6 @@ class BillService {
                     billId: String(billId),
                     srNo: Number(shipment.srNo || 0),
                     shipmentDate: String(shipment.date || ''),
-                    containerNo: String(shipment.containerNo || ''),
                     vehicleNo: String(shipment.vehicleNo || ''),
                     fromLocation: String(shipment.from || ''),
                     toLocation: String(shipment.to || ''),
