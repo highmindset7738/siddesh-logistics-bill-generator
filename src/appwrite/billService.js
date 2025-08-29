@@ -55,7 +55,7 @@ class BillService {
                     vehicleNo: String(shipment.vehicleNo || ''),
                     fromLocation: String(shipment.from || ''),
                     toLocation: String(shipment.to || ''),
-                    weight: String(shipment.weight || ''),
+                    weight: Number(shipment.weight || 0),
                     totalFair: Number(shipment.totalFair || 0),
                 };
                 
