@@ -11,6 +11,7 @@ const BillPreview = ({ billData, onBack, savedBillId }) => {
   const generatePDF = async () => {
     try {
       console.log('🔄 Generating PDF...');
+      console.log('📋 Saved Bill ID:', savedBillId);
       
       const element = billRef.current;
       const canvas = await html2canvas(element, {
@@ -42,11 +43,13 @@ const BillPreview = ({ billData, onBack, savedBillId }) => {
 
       // Convert PDF to blob for storage
       const pdfBlob = pdf.output('blob');
+      console.log('📄 PDF blob created, size:', pdfBlob.size, 'bytes');
       
       // Save PDF to Appwrite storage if we have a saved bill ID
       if (savedBillId) {
         try {
           console.log('💾 Saving PDF to Appwrite storage...');
+          console.log('🗂️ Bill Number:', billData.billNo);
           const { fileId, fileUrl } = await billService.savePDFToStorage(pdfBlob, billData.billNo);
           
           // Update the bill document with PDF info
@@ -55,8 +58,11 @@ const BillPreview = ({ billData, onBack, savedBillId }) => {
           console.log('✅ PDF saved to storage and bill updated!');
         } catch (storageError) {
           console.error('❌ Error saving PDF to storage:', storageError);
+          console.error('Storage error details:', storageError.message);
           // Continue with download even if storage fails
         }
+      } else {
+        console.log('⚠️ No saved bill ID - PDF will not be stored');
       }
 
       // Download the PDF
