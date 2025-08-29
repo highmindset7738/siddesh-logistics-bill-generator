@@ -79,7 +79,7 @@ function App() {
       const formattedShipments = shipments.map(shipment => ({
         srNo: shipment.srNo,
         date: shipment.shipmentDate,
-        containerNo: 'N/A', // Not stored in collection
+        containerNo: shipment.containerNo,
         vehicleNo: shipment.vehicleNo,
         from: shipment.fromLocation,
         to: shipment.toLocation,
