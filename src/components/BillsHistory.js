@@ -6,6 +6,7 @@ const BillsHistory = ({ onBack, onViewBill }) => {
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchBills();
@@ -47,6 +48,11 @@ const BillsHistory = ({ onBack, onViewBill }) => {
     }).format(amount);
   };
 
+  // Filter bills based on search term
+  const filteredBills = bills.filter(bill =>
+    bill.billNumber.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return (
       <div className="bills-history">
@@ -70,21 +76,39 @@ const BillsHistory = ({ onBack, onViewBill }) => {
     <div className="bills-history">
       <div className="bills-header">
         <h2>📋 Bills History</h2>
-        <button onClick={onBack} className="btn btn-secondary">
-          ← Back to Form
-        </button>
       </div>
 
-      {bills.length === 0 ? (
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="🔍 Search by bill number..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+      </div>
+
+      {filteredBills.length === 0 ? (
         <div className="no-bills">
-          <p>No bills found. Create your first bill!</p>
-          <button onClick={onBack} className="btn btn-primary">
-            Create New Bill
-          </button>
+          {searchTerm ? (
+            <>
+              <p>No bills found matching "{searchTerm}"</p>
+              <button onClick={() => setSearchTerm('')} className="btn btn-primary">
+                Clear Search
+              </button>
+            </>
+          ) : (
+            <>
+              <p>No bills found. Create your first bill!</p>
+              <button onClick={onBack} className="btn btn-primary">
+                Create New Bill
+              </button>
+            </>
+          )}
         </div>
       ) : (
         <div className="bills-grid">
-          {bills.map((bill) => (
+          {filteredBills.map((bill) => (
             <div key={bill.$id} className="bill-card">
               <div className="bill-card-header">
                 <h3>{bill.billNumber}</h3>
