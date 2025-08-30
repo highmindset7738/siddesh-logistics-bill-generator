@@ -1,8 +1,9 @@
 .app-header {
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
   color: white;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 1.5rem 2rem;
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
+  border-bottom: 3px solid #fbbf24;
 }
 
 .header-content {
@@ -12,13 +13,19 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .header-content h1 {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 2.5rem;
+  font-weight: 900;
   margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  letter-spacing: 1px;
+  background: linear-gradient(45deg, #ffffff, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .header-nav {
@@ -27,47 +34,80 @@
 }
 
 .nav-btn {
-  padding: 0.75rem 1.5rem;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 8px;
-  background: rgba(255,255,255,0.1);
-  color: rgb(0, 0, 0);
+  padding: 0.875rem 2rem;
+  border: 2px solid #fbbf24;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #dc2626;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .nav-btn:hover {
-  background: rgba(255,255,255,0.2);
-  border-color: rgba(255,255,255,0.5);
-  transform: translateY(-2px);
+  background: #fbbf24;
+  color: #ffffff;
+  border-color: #f59e0b;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
 }
 
 .nav-btn.active {
-  background: rgba(5, 0, 0, 0.9);
-  color: #15ff00;
-  border-color: white;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+}
+
+.nav-btn.active:hover {
+  background: linear-gradient(135deg, #047857, #059669);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
 }
 
 @media (max-width: 768px) {
+  .app-header {
+    padding: 1rem;
+  }
+  
   .header-content {
     flex-direction: column;
     text-align: center;
+    gap: 1rem;
   }
   
   .header-content h1 {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
   
   .header-nav {
     width: 100%;
     justify-content: center;
+    flex-wrap: wrap;
   }
   
   .nav-btn {
     flex: 1;
+    min-width: 140px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 1.75rem;
+  }
+  
+  .nav-btn {
     min-width: 120px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.85rem;
   }
 }

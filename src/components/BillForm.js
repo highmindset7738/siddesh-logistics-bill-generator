@@ -358,7 +358,7 @@ const BillForm = ({ onSubmit, initialData }) => {
 
         <div className="form-actions">
           <button type="submit" className="btn btn-primary">
-            📄 Generate Bill Preview
+            📄 Generate Bill
           </button>
         </div>
       </form>

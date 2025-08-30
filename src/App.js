@@ -68,6 +68,34 @@ function App() {
   const handleNavigate = (page) => {
     setCurrentPage(page);
     setShowPreview(false);
+    setViewingHistoryBill(false);
+    
+    // Clear form data when going back to form from history
+    if (page === 'form') {
+      setBillData({
+        billNo: '',
+        date: new Date().toISOString().split('T')[0],
+        customerName: '',
+        customerAddress: '',
+        shipments: [
+          {
+            srNo: 1,
+            date: '',
+            containerNo: '',
+            vehicleNo: '',
+            from: '',
+            to: '',
+            weight: '',
+            totalFair: '',
+            total: ''
+          }
+        ],
+        totalAmount: 0,
+        advanceAmount: 0,
+        balanceAmount: 0
+      });
+      setSavedBillId(null);
+    }
   };
 
   const handleViewBill = async (bill) => {
