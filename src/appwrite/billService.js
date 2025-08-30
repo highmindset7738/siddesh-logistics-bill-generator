@@ -251,6 +251,8 @@ class BillService {
             throw error;
         }
     }
+
+    async updateBillStatus(billId, status) {
         try {
             console.log('📝 Updating bill status:', billId, 'to', status);
             
