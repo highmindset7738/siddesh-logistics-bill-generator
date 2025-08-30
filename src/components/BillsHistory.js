@@ -8,6 +8,8 @@ const BillsHistory = ({ onBack, onViewBill }) => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('pending');
+  const [paymentHistory, setPaymentHistory] = useState({});
+  const [showPayments, setShowPayments] = useState({});
 
   useEffect(() => {
     fetchBills();
@@ -63,11 +65,35 @@ const BillsHistory = ({ onBack, onViewBill }) => {
         setBills(bills.map(bill => 
           bill.$id === billId ? updatedBill : bill
         ));
+        // Refresh payment history for this bill
+        await fetchPaymentHistory(billId);
         alert(`Payment of ₹${paymentAmount} added successfully!`);
       } catch (err) {
         alert('Failed to add payment');
         console.error('Error adding payment:', err);
       }
+    }
+  };
+
+  const togglePaymentHistory = async (billId) => {
+    if (showPayments[billId]) {
+      // Hide payments
+      setShowPayments(prev => ({ ...prev, [billId]: false }));
+    } else {
+      // Show payments - fetch if not already loaded
+      if (!paymentHistory[billId]) {
+        await fetchPaymentHistory(billId);
+      }
+      setShowPayments(prev => ({ ...prev, [billId]: true }));
+    }
+  };
+
+  const fetchPaymentHistory = async (billId) => {
+    try {
+      const payments = await billService.getPaymentHistory(billId);
+      setPaymentHistory(prev => ({ ...prev, [billId]: payments }));
+    } catch (err) {
+      console.error('Error fetching payment history:', err);
     }
   };
 
@@ -182,7 +208,38 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                   <div className="amount-row balance">
                     <span>Balance:</span>
                     <span>{formatCurrency(bill.balanceAmount)}</span>
-                {bill.status === 'pending' && (
+                  
+                  {/* Payment History Toggle */}
+                  <div className="payment-history-toggle">
+                    <button 
+                      onClick={() => togglePaymentHistory(bill.$id)}
+                      className="payment-toggle-btn"
+                    >
+                      📋 Payment History {showPayments[bill.$id] ? '▲' : '▼'}
+                    </button>
+                  </div>
+                  
+                  {/* Payment History Dropdown */}
+                  {showPayments[bill.$id] && (
+                    <div className="payment-history-dropdown">
+                      {paymentHistory[bill.$id] && paymentHistory[bill.$id].length > 0 ? (
+                        <div className="payment-list">
+                          {paymentHistory[bill.$id].map((payment, index) => (
+                            <div key={payment.$id} className="payment-item">
+                              <div className="payment-details">
+                                <span className="payment-amount">₹{payment.paymentAmount.toLocaleString()}</span>
+                                <span className="payment-date">{payment.paymentDate} {payment.paymentTime}</span>
+                              </div>
+                              <div className="payment-description">{payment.description}</div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="no-payments">No payment records found</div>
+                      )}
+                    </div>
+                  )}
+                </div>                {bill.status === 'pending' && (
                   <button 
                     onClick={() => handleAddPayment(bill.$id)}
                     className="btn btn-success"
