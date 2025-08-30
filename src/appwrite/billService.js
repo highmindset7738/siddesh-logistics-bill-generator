@@ -12,7 +12,8 @@ class BillService {
                 customerAddress: String(billData.customerAddress || ''),
                 billDate: String(billData.date || ''),
                 totalAmount: Number(billData.totalAmount || 0),
-                paidAmount: Number(billData.advanceAmount || 0),
+                paidAmount: Number(billData.advanceAmount || 0), // Keep for compatibility
+                totalPaid: Number(billData.advanceAmount || 0), // New field for tracking
                 balanceAmount: Number(billData.balanceAmount || 0),
                 status: String(billData.balanceAmount === 0 ? 'paid' : 'pending'),
                 userId: String('siddesh-user'),
@@ -222,7 +223,34 @@ class BillService {
         }
     }
 
-    async updateBillStatus(billId, status) {
+    async addPayment(billId, paymentAmount) {
+        try {
+            console.log('💰 Adding payment:', paymentAmount, 'to bill:', billId);
+            
+            // Get current bill data
+            const bill = await this.getBill(billId);
+            const newTotalPaid = Number(bill.totalPaid) + Number(paymentAmount);
+            const newBalance = Number(bill.totalAmount) - newTotalPaid;
+            const newStatus = newBalance <= 0 ? 'paid' : 'pending';
+            
+            const response = await databases.updateDocument(
+                DATABASE_ID,
+                BILLS_COLLECTION_ID,
+                billId,
+                {
+                    totalPaid: newTotalPaid,
+                    balanceAmount: newBalance,
+                    status: newStatus
+                }
+            );
+            
+            console.log('✅ Payment added successfully');
+            return response;
+        } catch (error) {
+            console.error('❌ Error adding payment:', error);
+            throw error;
+        }
+    }
         try {
             console.log('📝 Updating bill status:', billId, 'to', status);
             

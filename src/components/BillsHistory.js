@@ -55,6 +55,22 @@ const BillsHistory = ({ onBack, onViewBill }) => {
     }
   };
 
+  const handleAddPayment = async (billId) => {
+    const paymentAmount = prompt('Enter payment amount:');
+    if (paymentAmount && !isNaN(paymentAmount) && Number(paymentAmount) > 0) {
+      try {
+        const updatedBill = await billService.addPayment(billId, Number(paymentAmount));
+        setBills(bills.map(bill => 
+          bill.$id === billId ? updatedBill : bill
+        ));
+        alert(`Payment of ₹${paymentAmount} added successfully!`);
+      } catch (err) {
+        alert('Failed to add payment');
+        console.error('Error adding payment:', err);
+      }
+    }
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-GB');
   };
@@ -160,13 +176,20 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                     <span>{formatCurrency(bill.totalAmount)}</span>
                   </div>
                   <div className="amount-row">
-                    <span>Advance:</span>
-                    <span>{formatCurrency(bill.paidAmount)}</span>
+                    <span>Total Paid:</span>
+                    <span>{formatCurrency(bill.totalPaid || bill.paidAmount)}</span>
                   </div>
                   <div className="amount-row balance">
                     <span>Balance:</span>
                     <span>{formatCurrency(bill.balanceAmount)}</span>
-                  </div>
+                {bill.status === 'pending' && (
+                  <button 
+                    onClick={() => handleAddPayment(bill.$id)}
+                    className="btn btn-success"
+                  >
+                    💰 Add Payment
+                  </button>
+                )}                  </div>
                 </div>
               </div>
               
