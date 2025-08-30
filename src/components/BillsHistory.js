@@ -133,7 +133,7 @@ const BillsHistory = ({ onBack, onViewBill }) => {
   return (
     <div className="bills-history">
       <div className="bills-header">
-        <h2>📋 Bills History</h2>
+        <h2>Bills History</h2>
       </div>
 
       <div className="status-tabs">
@@ -213,7 +213,7 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                       onClick={() => togglePaymentHistory(bill.$id)}
                       className="payment-toggle-btn"
                     >
-                      📋 Payment History {showPayments[bill.$id] ? '▲' : '▼'}
+                      Payment History {showPayments[bill.$id] ? '▲' : '▼'}
                     </button>
                   </div>
                   
@@ -244,27 +244,27 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                   onClick={() => onViewBill(bill)}
                   className="btn btn-secondary"
                 >
-                  👁️ View
+                  View
                 </button>
                 {bill.status === 'pending' && (
                   <button 
                     onClick={() => handleAddPayment(bill.$id)}
                     className="btn btn-success"
                   >
-                    💰 Add Payment
+                    Add Payment
                   </button>
                 )}
                 <button 
                   onClick={() => handleStatusToggle(bill.$id, bill.status)}
                   className={`btn ${bill.status === 'pending' ? 'btn-success' : 'btn-warning'}`}
                 >
-                  {bill.status === 'pending' ? '✅ Mark Paid' : '⏳ Mark Pending'}
+                  {bill.status === 'pending' ? 'Mark Paid' : 'Mark Pending'}
                 </button>
                 <button 
                   onClick={() => handleDelete(bill.$id)}
                   className="btn btn-danger"
                 >
-                  🗑️ Delete
+                  Delete
                 </button>
               </div>
             </div>
