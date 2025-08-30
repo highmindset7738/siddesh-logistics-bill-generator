@@ -16,8 +16,6 @@ class BillService {
                 balanceAmount: Number(billData.balanceAmount || 0),
                 status: String(billData.balanceAmount === 0 ? 'paid' : 'pending'),
                 userId: String('siddesh-user'),
-                pdfFileId: String(''),
-                pdfUrl: String(''),
             };
             
             console.log('📄 Document to create:', documentData);
