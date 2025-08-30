@@ -75,7 +75,7 @@ const BillsHistory = ({ onBack, onViewBill }) => {
   return (
     <div className="bills-history">
       <div className="bills-header">
-        <h2>📋 Bills History</h2>
+        <h2> Bills History</h2>
       </div>
 
       <div className="search-container">
@@ -142,13 +142,13 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                   onClick={() => onViewBill(bill)}
                   className="btn btn-secondary"
                 >
-                  👁️ View
+                   View
                 </button>
                 <button 
                   onClick={() => handleDelete(bill.$id)}
                   className="btn btn-danger"
                 >
-                  🗑️ Delete
+                   Delete
                 </button>
               </div>
             </div>

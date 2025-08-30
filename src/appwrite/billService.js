@@ -175,14 +175,50 @@ class BillService {
 
     async deleteBill(billId) {
         try {
+            console.log('🗑️ Deleting bill and related shipments:', billId);
+            
+            // First delete all related shipments
+            await this.deleteShipments(billId);
+            
+            // Then delete the bill
             await databases.deleteDocument(
                 DATABASE_ID,
                 BILLS_COLLECTION_ID,
                 billId
             );
+            
+            console.log('✅ Bill and shipments deleted successfully');
             return true;
         } catch (error) {
-            console.error('Error deleting bill:', error);
+            console.error('❌ Error deleting bill:', error);
+            throw error;
+        }
+    }
+
+    async deleteShipments(billId) {
+        try {
+            console.log('🚢 Deleting shipments for bill:', billId);
+            
+            // Get all shipments for this bill
+            const response = await databases.listDocuments(
+                DATABASE_ID,
+                SHIPMENTS_COLLECTION_ID
+            );
+            
+            // Filter shipments for this bill and delete them
+            const billShipments = response.documents.filter(shipment => shipment.billId === billId);
+            
+            for (const shipment of billShipments) {
+                await databases.deleteDocument(
+                    DATABASE_ID,
+                    SHIPMENTS_COLLECTION_ID,
+                    shipment.$id
+                );
+            }
+            
+            console.log(`✅ Deleted ${billShipments.length} shipments`);
+        } catch (error) {
+            console.error('❌ Error deleting shipments:', error);
             throw error;
         }
     }

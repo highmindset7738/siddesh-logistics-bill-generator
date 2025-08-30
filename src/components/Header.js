@@ -11,13 +11,13 @@ const Header = ({ currentPage, onNavigate }) => {
             className={`nav-btn ${currentPage === 'form' ? 'active' : ''}`}
             onClick={() => onNavigate('form')}
           >
-            📝 Create Bill
+             Create Bill
           </button>
           <button 
             className={`nav-btn ${currentPage === 'history' ? 'active' : ''}`}
             onClick={() => onNavigate('history')}
           >
-            📋 Bills History
+             Bills History
           </button>
         </nav>
       </div>

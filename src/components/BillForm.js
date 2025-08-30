@@ -165,7 +165,7 @@ const BillForm = ({ onSubmit, initialData }) => {
                 fontWeight: '600'
               }}
             >
-              🚀 Fill Test Data
+               Fill Test Data
             </button>
           </div>
           <div className="form-row">
