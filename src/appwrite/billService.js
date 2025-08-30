@@ -1,4 +1,4 @@
-import { databases, storage, DATABASE_ID, BILLS_COLLECTION_ID, SHIPMENTS_COLLECTION_ID, STORAGE_BUCKET_ID, ID } from './config';
+import { databases, storage, DATABASE_ID, BILLS_COLLECTION_ID, SHIPMENTS_COLLECTION_ID, PAYMENTS_COLLECTION_ID, STORAGE_BUCKET_ID, ID } from './config';
 
 class BillService {
     async createBill(billData) {
@@ -33,6 +33,11 @@ class BillService {
             // Save shipments to separate collection
             if (billData.shipments && billData.shipments.length > 0) {
                 await this.saveShipments(document.$id, billData.shipments);
+            }
+            
+            // Save initial payment record if advance amount > 0
+            if (billData.advanceAmount > 0) {
+                await this.savePaymentRecord(document.$id, billData.advanceAmount, 'Initial Advance Payment');
             }
             
             return document;
@@ -175,19 +180,22 @@ class BillService {
 
     async deleteBill(billId) {
         try {
-            console.log('🗑️ Deleting bill and related shipments:', billId);
+            console.log('🗑️ Deleting bill and related data:', billId);
             
-            // First delete all related shipments
+            // Delete all related shipments
             await this.deleteShipments(billId);
             
-            // Then delete the bill
+            // Delete all related payments
+            await this.deletePayments(billId);
+            
+            // Delete the bill
             await databases.deleteDocument(
                 DATABASE_ID,
                 BILLS_COLLECTION_ID,
                 billId
             );
             
-            console.log('✅ Bill and shipments deleted successfully');
+            console.log('✅ Bill, shipments, and payments deleted successfully');
             return true;
         } catch (error) {
             console.error('❌ Error deleting bill:', error);
@@ -233,6 +241,7 @@ class BillService {
             const newBalance = Number(bill.totalAmount) - newTotalPaid;
             const newStatus = newBalance <= 0 ? 'paid' : 'pending';
             
+            // Update bill
             const response = await databases.updateDocument(
                 DATABASE_ID,
                 BILLS_COLLECTION_ID,
@@ -244,10 +253,81 @@ class BillService {
                 }
             );
             
+            // Save payment record
+            await this.savePaymentRecord(billId, paymentAmount, 'Additional Payment');
+            
             console.log('✅ Payment added successfully');
             return response;
         } catch (error) {
             console.error('❌ Error adding payment:', error);
+            throw error;
+        }
+    }
+
+    async savePaymentRecord(billId, amount, description = '') {
+        try {
+            const now = new Date();
+            const paymentData = {
+                billId: String(billId),
+                paymentAmount: Number(amount),
+                paymentDate: now.toLocaleDateString('en-GB'),
+                paymentTime: now.toLocaleTimeString('en-GB', { hour12: true }),
+                description: String(description)
+            };
+            
+            await databases.createDocument(
+                DATABASE_ID,
+                PAYMENTS_COLLECTION_ID,
+                ID.unique(),
+                paymentData
+            );
+            
+            console.log('✅ Payment record saved');
+        } catch (error) {
+            console.error('❌ Error saving payment record:', error);
+            throw error;
+        }
+    }
+
+    async getPaymentHistory(billId) {
+        try {
+            console.log('📋 Fetching payment history for bill:', billId);
+            const response = await databases.listDocuments(
+                DATABASE_ID,
+                PAYMENTS_COLLECTION_ID
+            );
+            
+            const billPayments = response.documents.filter(payment => payment.billId === billId);
+            console.log('✅ Payment history fetched:', billPayments);
+            return billPayments;
+        } catch (error) {
+            console.error('❌ Error fetching payment history:', error);
+            return [];
+        }
+    }
+
+    async deletePayments(billId) {
+        try {
+            console.log('🗑️ Deleting payments for bill:', billId);
+            
+            const response = await databases.listDocuments(
+                DATABASE_ID,
+                PAYMENTS_COLLECTION_ID
+            );
+            
+            const billPayments = response.documents.filter(payment => payment.billId === billId);
+            
+            for (const payment of billPayments) {
+                await databases.deleteDocument(
+                    DATABASE_ID,
+                    PAYMENTS_COLLECTION_ID,
+                    payment.$id
+                );
+            }
+            
+            console.log(`✅ Deleted ${billPayments.length} payment records`);
+        } catch (error) {
+            console.error('❌ Error deleting payments:', error);
             throw error;
         }
     }
