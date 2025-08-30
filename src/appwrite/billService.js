@@ -14,6 +14,7 @@ class BillService {
                 totalAmount: Number(billData.totalAmount || 0),
                 paidAmount: Number(billData.advanceAmount || 0),
                 balanceAmount: Number(billData.balanceAmount || 0),
+                status: String(billData.balanceAmount === 0 ? 'paid' : 'pending'),
                 userId: String('siddesh-user'),
                 pdfFileId: String(''),
                 pdfUrl: String(''),
@@ -219,6 +220,25 @@ class BillService {
             console.log(`✅ Deleted ${billShipments.length} shipments`);
         } catch (error) {
             console.error('❌ Error deleting shipments:', error);
+            throw error;
+        }
+    }
+
+    async updateBillStatus(billId, status) {
+        try {
+            console.log('📝 Updating bill status:', billId, 'to', status);
+            
+            const response = await databases.updateDocument(
+                DATABASE_ID,
+                BILLS_COLLECTION_ID,
+                billId,
+                { status: String(status) }
+            );
+            
+            console.log('✅ Bill status updated successfully');
+            return response;
+        } catch (error) {
+            console.error('❌ Error updating bill status:', error);
             throw error;
         }
     }

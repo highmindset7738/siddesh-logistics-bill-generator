@@ -7,6 +7,7 @@ const BillsHistory = ({ onBack, onViewBill }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState('pending');
 
   useEffect(() => {
     fetchBills();
@@ -37,6 +38,23 @@ const BillsHistory = ({ onBack, onViewBill }) => {
     }
   };
 
+  const handleStatusToggle = async (billId, currentStatus) => {
+    const newStatus = currentStatus === 'pending' ? 'paid' : 'pending';
+    const confirmMessage = `Mark this bill as ${newStatus.toUpperCase()}?`;
+    
+    if (window.confirm(confirmMessage)) {
+      try {
+        await billService.updateBillStatus(billId, newStatus);
+        setBills(bills.map(bill => 
+          bill.$id === billId ? { ...bill, status: newStatus } : bill
+        ));
+      } catch (err) {
+        alert('Failed to update bill status');
+        console.error('Error updating bill status:', err);
+      }
+    }
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-GB');
   };
@@ -48,10 +66,12 @@ const BillsHistory = ({ onBack, onViewBill }) => {
     }).format(amount);
   };
 
-  // Filter bills based on search term
-  const filteredBills = bills.filter(bill =>
-    bill.billNumber.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter bills based on search term and active tab
+  const filteredBills = bills.filter(bill => {
+    const matchesSearch = bill.billNumber.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = bill.status === activeTab;
+    return matchesSearch && matchesStatus;
+  });
 
   if (loading) {
     return (
@@ -77,7 +97,20 @@ const BillsHistory = ({ onBack, onViewBill }) => {
       <div className="bills-header">
         <h2> Bills History</h2>
       </div>
-
+      <div className="status-tabs">
+        <button 
+          className={`tab-btn ${activeTab === 'pending' ? 'active' : ''}`}
+          onClick={() => setActiveTab('pending')}
+        >
+          ⏳ Pending ({bills.filter(b => b.status === 'pending').length})
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'paid' ? 'active' : ''}`}
+          onClick={() => setActiveTab('paid')}
+        >
+          ✅ Paid ({bills.filter(b => b.status === 'paid').length})
+        </button>
+      </div>
       <div className="search-container">
         <input
           type="text"
@@ -127,7 +160,7 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                     <span>{formatCurrency(bill.totalAmount)}</span>
                   </div>
                   <div className="amount-row">
-                    <span>Paid:</span>
+                    <span>Advance:</span>
                     <span>{formatCurrency(bill.paidAmount)}</span>
                   </div>
                   <div className="amount-row balance">
@@ -145,6 +178,11 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                    View
                 </button>
                 <button 
+                  onClick={() => handleStatusToggle(bill.$id, bill.status)}
+                  className={`btn ${bill.status === 'pending' ? 'btn-success' : 'btn-warning'}`}
+                >
+                  {bill.status === 'pending' ? '✅ Mark Paid' : '⏳ Mark Pending'}
+                </button>                <button 
                   onClick={() => handleDelete(bill.$id)}
                   className="btn btn-danger"
                 >
