@@ -65,7 +65,6 @@ const BillsHistory = ({ onBack, onViewBill }) => {
         setBills(bills.map(bill => 
           bill.$id === billId ? updatedBill : bill
         ));
-        // Refresh payment history for this bill
         await fetchPaymentHistory(billId);
         alert(`Payment of ₹${paymentAmount} added successfully!`);
       } catch (err) {
@@ -77,10 +76,8 @@ const BillsHistory = ({ onBack, onViewBill }) => {
 
   const togglePaymentHistory = async (billId) => {
     if (showPayments[billId]) {
-      // Hide payments
       setShowPayments(prev => ({ ...prev, [billId]: false }));
     } else {
-      // Show payments - fetch if not already loaded
       if (!paymentHistory[billId]) {
         await fetchPaymentHistory(billId);
       }
@@ -108,7 +105,6 @@ const BillsHistory = ({ onBack, onViewBill }) => {
     }).format(amount);
   };
 
-  // Filter bills based on search term and active tab
   const filteredBills = bills.filter(bill => {
     const matchesSearch = bill.billNumber.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = bill.status === activeTab;
@@ -137,8 +133,9 @@ const BillsHistory = ({ onBack, onViewBill }) => {
   return (
     <div className="bills-history">
       <div className="bills-header">
-        <h2> Bills History</h2>
+        <h2>📋 Bills History</h2>
       </div>
+
       <div className="status-tabs">
         <button 
           className={`tab-btn ${activeTab === 'pending' ? 'active' : ''}`}
@@ -153,6 +150,7 @@ const BillsHistory = ({ onBack, onViewBill }) => {
           ✅ Paid ({bills.filter(b => b.status === 'paid').length})
         </button>
       </div>
+
       <div className="search-container">
         <input
           type="text"
@@ -208,8 +206,8 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                   <div className="amount-row balance">
                     <span>Balance:</span>
                     <span>{formatCurrency(bill.balanceAmount)}</span>
+                  </div>
                   
-                  {/* Payment History Toggle */}
                   <div className="payment-history-toggle">
                     <button 
                       onClick={() => togglePaymentHistory(bill.$id)}
@@ -219,12 +217,11 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                     </button>
                   </div>
                   
-                  {/* Payment History Dropdown */}
                   {showPayments[bill.$id] && (
                     <div className="payment-history-dropdown">
                       {paymentHistory[bill.$id] && paymentHistory[bill.$id].length > 0 ? (
                         <div className="payment-list">
-                          {paymentHistory[bill.$id].map((payment, index) => (
+                          {paymentHistory[bill.$id].map((payment) => (
                             <div key={payment.$id} className="payment-item">
                               <div className="payment-details">
                                 <span className="payment-amount">₹{payment.paymentAmount.toLocaleString()}</span>
@@ -239,14 +236,6 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                       )}
                     </div>
                   )}
-                </div>                {bill.status === 'pending' && (
-                  <button 
-                    onClick={() => handleAddPayment(bill.$id)}
-                    className="btn btn-success"
-                  >
-                    💰 Add Payment
-                  </button>
-                )}                  </div>
                 </div>
               </div>
               
@@ -255,18 +244,27 @@ const BillsHistory = ({ onBack, onViewBill }) => {
                   onClick={() => onViewBill(bill)}
                   className="btn btn-secondary"
                 >
-                   View
+                  👁️ View
                 </button>
+                {bill.status === 'pending' && (
+                  <button 
+                    onClick={() => handleAddPayment(bill.$id)}
+                    className="btn btn-success"
+                  >
+                    💰 Add Payment
+                  </button>
+                )}
                 <button 
                   onClick={() => handleStatusToggle(bill.$id, bill.status)}
                   className={`btn ${bill.status === 'pending' ? 'btn-success' : 'btn-warning'}`}
                 >
                   {bill.status === 'pending' ? '✅ Mark Paid' : '⏳ Mark Pending'}
-                </button>                <button 
+                </button>
+                <button 
                   onClick={() => handleDelete(bill.$id)}
                   className="btn btn-danger"
                 >
-                   Delete
+                  🗑️ Delete
                 </button>
               </div>
             </div>
